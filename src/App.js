@@ -22,6 +22,7 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <h1>Tx Param Component</h1>
+          <a href="https://github.com/danfinlay/react-eth-tx-params">Fork on GitHub</a>
           <div>
             {
               decodings.map((decoding, i) => {
