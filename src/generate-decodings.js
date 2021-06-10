@@ -45,15 +45,19 @@ run()
 
 async function run () {
   for await (tx of txs) {
-    const decoding = await getDecoding(tx);
-    decoding.desc = tx.desc;
-    decodings.push(decoding);
+    const { decoding, definitions } = await getDecoding(tx);
+    const data = {
+      tx: decoding,
+      definitions,
+      desc: tx.desc,
+    }
+    decodings.push(data);
   }
-  fs.writeFileSync(path.join(__dirname, 'decodings.js'), `export default ${JSON.stringify(decodings)}`);
+  fs.writeFileSync(path.join(__dirname, 'decodings.js'), `export default ${JSON.stringify(decodings, null, 2)}`);
 }
 
 async function getDecoding (txParams, chainId = 1) {
-	const base = 'http://164.90.247.198/tx';
+	const base = 'http://164.90.247.198/txExtra';
 	const url = `${base}?to=${txParams.to}&from=${txParams.from}&data=${txParams.data}&chain=${chainId}`;
 	const result = await fetch(url).then(res => res.json());
 	return result;

@@ -14,8 +14,8 @@ class App extends React.Component {
 
   render() {
     const { template } = this.state;
-    const decoding = decodings[template];
-    const data = deserializeCalldataDecoding(decoding);
+    const { tx, desc, definitions }= decodings[template];
+    const data = deserializeCalldataDecoding(tx);
     console.log('Decoding: %o', data);
  
     return (
@@ -30,7 +30,7 @@ class App extends React.Component {
                   <button key={i} onClick={() => {
                     console.log('trying to click', i);
                     this.setState({ template: i });
-                  }}>{decoding.desc}</button>
+                  }}>{desc}</button>
                 )  
               })
             }
@@ -41,6 +41,7 @@ class App extends React.Component {
 
           <EthTxParams 
             decoding={data}
+            definitions={definitions}
           ></EthTxParams>
 
         </main>

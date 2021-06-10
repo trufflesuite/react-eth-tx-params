@@ -7,11 +7,12 @@ import { Jazzicon } from '@ukstv/jazzicon-react';
 
 const EthTxParams = ({
   decoding,
+  definitions,
 }) => {
   switch (decoding.kind) {
     case 'function':
 
-      const { arguments: args, abi: { name } } = decoding;
+      const {arguments: args, abi: { name } } = decoding;
       return (
         <div className="eth-tx-params">
           <div class="solidity-func-name">{ deCamelCase(name).toUpperCase() }</div>
