@@ -8,14 +8,13 @@ import { Jazzicon } from '@ukstv/jazzicon-react';
 const EthTxParams = ({
   decoding,
 }) => {
-  console.dir(decoding); 
   switch (decoding.kind) {
     case 'function':
 
       const { arguments: args, abi: { name } } = decoding;
       return (
         <div className="eth-tx-params">
-          <h2>{ deCamelCase(name).toUpperCase() }</h2>
+          <div class="solidity-func-name">{ deCamelCase(name).toUpperCase() }</div>
           <ol>
             { args.map((argument, index) => {
               return renderNamedItem(argument?.name, argument.value, index)
@@ -34,11 +33,11 @@ function renderNamedItem (name, item, index) {
 
   if (item.type.typeClass === 'struct') {
     return (<details key={index} open>
-      <summary>{deCamelCase(name)}</summary>
+      <summary>{deCamelCase(name)}:</summary>
       <ol>
         {
           item.value.map(({ name, value: item }, index) => {
-            return <li>
+            return <li className="solidity-value">
               {renderNamedItem(name, item, index)}
             </li>
           })
@@ -48,7 +47,7 @@ function renderNamedItem (name, item, index) {
   }
 
   return (<div key={index} className="solidity-named-item solidity-item">
-    <span className='param-name'>{ deCamelCase(name) }</span>
+    <span className='param-name'>{ deCamelCase(name) }:</span>
     { renderItem(item) }
   </div>)
 }
@@ -84,7 +83,7 @@ function renderItem(item) {
         case 'address':
           return (<span className="sol-item solidity-address">
             <Jazzicon address={item.value.asAddress}/>
-            {item.value.asAddress}
+            <span>{item.value.asAddress}</span>
           </span>) 
 
         default:

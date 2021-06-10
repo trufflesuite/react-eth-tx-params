@@ -1,20 +1,51 @@
 .eth-tx-params {
-  max-width: 30em;
+  width: 343px;
   background: white;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+
+  font-family: Euclid Circular B, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 172%;
 }
 
-.eth-tx-params h2 {
-  text-align: center;
+.eth-tx-params summary::marker {
+  color: #328CF5;
+}
+
+.eth-tx-params .solidity-func-name {
+  width: fit-content;
+  padding: 4px;
+  text-transform: uppercase;
+  border:1px solid rgb(149, 149, 149);
+  color:rgb(149,149,149);
+  border-radius: 4px;
 }
 
 .eth-tx-params .sol-item {
-  overflow: auto;
+  display: contents;
 }
 
+.eth-tx-params .sol-item > {
+  overflow: ellipses;
+}
+
+/* You might want to add padding here to indent, but you should not.
+This is because if you indent the ol, then you'll need to de-indent
+the summary. And if you de-indent the summary, you'll make the top item spill over,
+and then you'll have to indent everything. So just don't. Indent at the details. */
 .eth-tx-params ol {
   list-style: none;
-  padding: 8px;
+  padding: 0px;
+  max-width: inherit;
+}
+
+.eth-tx-params ol ol:not(:first-child) {
+  padding-left: 16px;
 }
 
 pre.solidity-raw {
@@ -28,7 +59,6 @@ pre.solidity-raw {
 .solidity-item {
   display: flex;
   flex-direction: row;
-  border: 1px solid rgb(187, 187, 187);
 }
 
 .solidity-address {
@@ -37,21 +67,25 @@ pre.solidity-raw {
 }
 
 .solidity-address :first-child {
-  width: 25px;
-  height: 25px;
+  width: 16px;
+  height: 16px;
+  margin: 0px 8px;
 }
 
 .solidity-item .param-name {
-  font-weight: bold;
-  padding-right: 1em;
+  padding-right: 8px;
+  color: black;
+}
+
+.solidity-value {
+  color: #6A737D;
 }
 
 .eth-tx-params details {
-  padding-left: 16px;
+  padding-left: 12px;
 }
 
 .eth-tx-params details > summary {
-  font-weight: bold;
-  transform: translateX(-15px);
+  color: black;
   font-family: sans-serif;
 }
