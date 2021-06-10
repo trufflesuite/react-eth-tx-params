@@ -7,6 +7,7 @@ import decodings from './decodings';
 
 export default {
   title: 'Eth Tx Params',
+  component: EthTxParams,
 };
 
 export const primaryType = () => {
@@ -19,7 +20,9 @@ export const primaryType = () => {
     >
     </EthTxParams>
   );
-}
+};
+
+primaryType.storyName = 'Airswap tx';
 
 export const secondaryType = () => {
   const decoding = decodings[1];
@@ -33,6 +36,8 @@ export const secondaryType = () => {
   );
 }
 
+secondaryType.storyName = 'MolochDao Rage quit';
+
 export const tertiaryType = () => {
   const decoding = decodings[2];
   const data = deserializeCalldataDecoding(decoding);
@@ -45,6 +50,8 @@ export const tertiaryType = () => {
   );
 }
 
+tertiaryType.storyName = 'Polygon deposit';
+
 export const fourthType = () => {
   const decoding = decodings[3];
   const data = deserializeCalldataDecoding(decoding);
@@ -56,6 +63,8 @@ export const fourthType = () => {
     </EthTxParams>
   );
 }
+
+fourthType.storyName = 'Uniswap v3 swap';
 
 function deserializeCalldataDecoding(decoding) {
   switch (decoding.kind) {
