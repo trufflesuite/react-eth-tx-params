@@ -1,0 +1,47 @@
+.eth-tx-params {
+  max-width: 30em;
+  background: white;
+  text-align: left;
+}
+
+.eth-tx-params h2 {
+  text-align: center;
+}
+
+.eth-tx-params ol {
+  list-style: none;
+  padding: 8px;
+}
+
+pre.solidity-raw {
+  text-align: left;
+}
+
+.solidity-named-item {
+  display: flex;
+}
+
+.solidity-item {
+  display: flex;
+  flex-direction: row;
+}
+
+.solidity-address :first-child {
+  width: 25px;
+  height: 25px;
+}
+
+.solidity-item .param-name {
+  font-weight: bold;
+  padding-right: 1em;
+}
+
+.eth-tx-params details {
+  padding-left: 16px;
+}
+
+.eth-tx-params details > summary {
+  font-weight: bold;
+  transform: translateX(-15px);
+  font-family: sans-serif;
+}
