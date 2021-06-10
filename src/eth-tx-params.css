@@ -8,6 +8,10 @@
   text-align: center;
 }
 
+.eth-tx-params .sol-item {
+  overflow: auto;
+}
+
 .eth-tx-params ol {
   list-style: none;
   padding: 8px;
@@ -22,6 +26,12 @@ pre.solidity-raw {
 }
 
 .solidity-item {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid rgb(187, 187, 187);
+}
+
+.solidity-address {
   display: flex;
   flex-direction: row;
 }
