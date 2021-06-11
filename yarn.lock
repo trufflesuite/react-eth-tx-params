@@ -8935,7 +8935,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9158,6 +9158,13 @@ react-error-overlay@^6.0.9:
   version "6.0.9"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
   integrity sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==
+
+react-hover@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-hover/-/react-hover-2.1.1.tgz#3bf3019f3982a8b295c785f670af78625b8a0ce2"
+  integrity sha512-V7SJplxf6yCIE4UnyIQQBwfr+x6B4nfEsdJ5mRI26I6dobb8joJumdFxfHbUdZanimpSMkw0U3i4aZJW2hyuqw==
+  dependencies:
+    prop-types "^15.5.10"
 
 react-is@^16.8.1:
   version "16.13.1"

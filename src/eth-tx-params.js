@@ -5,6 +5,7 @@ import inspect from 'browser-util-inspect';
 import './eth-tx-params.css';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import contractMap from '@metamask/contract-metadata';
+import ReactHover, { Trigger, Hover } from 'react-hover';
 import { reconstructSource } from "./reconstruct-source.js";
 
 const EthTxParams = ({
@@ -49,35 +50,47 @@ function renderNamedItem (name, item, index, definitions) {
 
     const amtAndDec = checkIfPlausibleAmount(item);
 
-    return (<details key={index} open>
-      <summary>{deCamelCase(name) + ': '}</summary>
-      <ol>
-        {
-          item.value.map((data, index) => {
-            const { name, value: item } = data
+    return (<ReactHover
+      options={{ followCursor: false }}>
+      <Trigger type="trigger">
+        <details key={index} open>
+          <summary>{deCamelCase(name) + ': '}</summary>
+          <ol>
+            {
+              item.value.map((data, index) => {
+                const { name, value: item } = data
 
-            if (amtAndDec && data === amtAndDec.amount) {
-              const amt = item.value.asBN.toString();
-              const firstSeg = amt.substr(0, amt.length - amtAndDec.decimals);
-              const lastSeg = amt.substr(amt.length - amtAndDec.decimals, amtAndDec.decimals);
-              const decimalAmount = `${firstSeg}.${lastSeg}`;
-              return <li className="solidity-value">
-                <div className="solidity-named-item solidity-item">
-                  <span className='param-name'>{ deCamelCase(name) + ': ' }</span>
-                  <span className="sol-item solidity-uint">
-                    {decimalAmount}
-                  </span>
-                </div>
-              </li>
+                if (amtAndDec && data === amtAndDec.amount) {
+                  const amt = item.value.asBN.toString();
+                  const firstSeg = amt.substr(0, amt.length - amtAndDec.decimals);
+                  const lastSeg = amt.substr(amt.length - amtAndDec.decimals, amtAndDec.decimals);
+                  const decimalAmount = `${firstSeg}.${lastSeg}`;
+                  return <li className="solidity-value">
+                    <div className="solidity-named-item solidity-item">
+                      <span className='param-name'>{ deCamelCase(name) + ': ' }</span>
+                      <span className="sol-item solidity-uint">
+                        {decimalAmount}
+                      </span>
+                    </div>
+                  </li>
+                }
+
+                return <li className="solidity-value" key={index}>
+                  {renderNamedItem(name, item, index, definitions)}
+                </li>
+              })
             }
-
-            return <li className="solidity-value" key={index}>
-              {renderNamedItem(name, item, index, definitions)}
-            </li>
-          })
-        }
-      </ol>
-    </details>);
+          </ol>
+        </details>
+      </Trigger>
+      <Hover type="hover">
+        <div>
+          <pre>
+            { source }
+          </pre>
+        </div>
+      </Hover>
+    </ReactHover>);
   }
 
   return (<div key={index} className="solidity-named-item solidity-item">
