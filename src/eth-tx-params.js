@@ -5,6 +5,7 @@ import inspect from 'browser-util-inspect';
 import './eth-tx-params.css';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import contractMap from '@metamask/contract-metadata';
+import { reconstructSource } from "./reconstruct-source.js";
 
 const EthTxParams = ({
   decoding,
@@ -18,9 +19,16 @@ const EthTxParams = ({
         <div className="eth-tx-params">
           <div className="solidity-func-name">{ deCamelCase(name).toUpperCase() }</div>
           <ol>
-            { args.map((argument, index) => {
-              return renderNamedItem(argument?.name, argument.value, index)
-            })}
+            {
+              args.map((argument, index) =>
+                renderNamedItem(
+                  argument?.name,
+                  argument.value,
+                  index,
+                  definitions
+                )
+              )
+            }
           </ol>
           <footer>Powered by <a href="https://www.trufflesuite.com/docs/truffle/codec/index.html">Truffle Codec</a></footer>
         </div>
@@ -32,9 +40,12 @@ const EthTxParams = ({
   }
 };
 
-function renderNamedItem (name, item, index) {
+function renderNamedItem (name, item, index, definitions) {
 
   if (item.type.typeClass === 'struct') {
+    // compute+log source
+    const source = reconstructSource({ definitions, typeId: item.type.id });
+    console.log(source);
 
     const amtAndDec = checkIfPlausibleAmount(item);
 
@@ -43,7 +54,7 @@ function renderNamedItem (name, item, index) {
       <ol>
         {
           item.value.map((data, index) => {
-            const { name, value: item } = data 
+            const { name, value: item } = data
 
             if (amtAndDec && data === amtAndDec.amount) {
               const amt = item.value.asBN.toString();
@@ -61,23 +72,23 @@ function renderNamedItem (name, item, index) {
             }
 
             return <li className="solidity-value" key={index}>
-              {renderNamedItem(name, item, index)}
+              {renderNamedItem(name, item, index, definitions)}
             </li>
           })
         }
-      </ol>      
+      </ol>
     </details>);
   }
 
   return (<div key={index} className="solidity-named-item solidity-item">
     <span className='param-name'>{ deCamelCase(name) + ': ' }</span>
-    { renderItem(item) }
+    { renderItem(item, definitions) }
   </div>)
 }
 
 // Result can be a value or an error
 // Result { type:SolidityVariableType , kind: ResultKindString }
-function renderItem(item) {
+function renderItem(item, definitions) {
   // Two discriminators: value or error
   switch (item.kind) {
     case "error":
@@ -114,7 +125,7 @@ function renderAddressComponentFor (item) {
 
   const metadata = contractMap[item.value.asAddress];
 
-  const icon = metadata ? <img src={`${path}${metadata.logo}`}/> : 
+  const icon = metadata ? <img src={`${path}${metadata.logo}`}/> :
     <Jazzicon address={item.value.asAddress}/>;
 
   const name = metadata ? metadata.name : item.value.asAddress;
@@ -122,7 +133,7 @@ function renderAddressComponentFor (item) {
   return (<span className="sol-item solidity-address">
     { icon }
     <span>{name}</span>
-  </span>) 
+  </span>)
 }
 
 
@@ -160,5 +171,5 @@ EthTxParams.propTypes = {
   children: PropTypes.node,
   icon: PropTypes.node,
 };
-           
+
 export default EthTxParams;
