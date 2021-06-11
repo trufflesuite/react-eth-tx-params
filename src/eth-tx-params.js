@@ -21,6 +21,7 @@ const EthTxParams = ({
               return renderNamedItem(argument?.name, argument.value, index)
             })}
           </ol>
+          <footer>Powered by <a href="https://www.trufflesuite.com/docs/truffle/codec/index.html">Truffle Codec</a></footer>
         </div>
       )
 

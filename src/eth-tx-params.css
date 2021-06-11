@@ -85,3 +85,13 @@ pre.solidity-raw {
   color: black;
   font-family: sans-serif;
 }
+
+.eth-tx-params footer {
+  text-align: center;
+  color: #8d959e;
+}
+
+.eth-tx-params footer a {
+  text-align: center;
+  color: #8d959e;
+}
