@@ -50,11 +50,13 @@ function renderNamedItem (name, item, index) {
               const firstSeg = amt.substr(0, amt.length - amtAndDec.decimals);
               const lastSeg = amt.substr(amt.length - amtAndDec.decimals, amtAndDec.decimals);
               const decimalAmount = `${firstSeg}.${lastSeg}`;
-              return <li className="solidity-named-item solidity-item">
-                <span className='param-name'>{ deCamelCase(name) + ': ' }</span>
-                <span className="sol-item solidity-uint">
-                  {decimalAmount}
-                </span>
+              return <li className="solidity-value">
+                <div className="solidity-named-item solidity-item">
+                  <span className='param-name'>{ deCamelCase(name) + ': ' }</span>
+                  <span className="sol-item solidity-uint">
+                    {decimalAmount}
+                  </span>
+                </div>
               </li>
             }
 
