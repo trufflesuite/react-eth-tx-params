@@ -4,6 +4,7 @@ import * as Codec from '@truffle/codec';
 import inspect from 'browser-util-inspect';
 import './eth-tx-params.css';
 import { Jazzicon } from '@ukstv/jazzicon-react';
+import contractMap from '@metamask/contract-metadata';
 
 const EthTxParams = ({
   decoding,
@@ -35,7 +36,7 @@ function renderNamedItem (name, item, index) {
 
   if (item.type.typeClass === 'struct') {
     return (<details key={index} open>
-      <summary>{deCamelCase(name)}:</summary>
+      <summary>{deCamelCase(name) + ': '}</summary>
       <ol>
         {
           item.value.map(({ name, value: item }, index) => {
@@ -49,7 +50,7 @@ function renderNamedItem (name, item, index) {
   }
 
   return (<div key={index} className="solidity-named-item solidity-item">
-    <span className='param-name'>{ deCamelCase(name) }:</span>
+    <span className='param-name'>{ deCamelCase(name) + ': ' }</span>
     { renderItem(item) }
   </div>)
 }
@@ -77,10 +78,7 @@ function renderItem(item) {
           </span>)
 
         case 'address':
-          return (<span className="sol-item solidity-address">
-            <Jazzicon address={item.value.asAddress}/>
-            <span>{item.value.asAddress}</span>
-          </span>) 
+          return renderAddressComponentFor(item);
 
         default:
           console.log('item: %o', item)
@@ -90,6 +88,24 @@ function renderItem(item) {
       }
   }
 }
+
+const path = 'https://raw.githubusercontent.com/MetaMask/contract-metadata/ecd8aabb34683695c3157bb25cb95f51e57e2620/images/';
+function renderAddressComponentFor (item) {
+
+  const metadata = contractMap[item.value.asAddress];
+
+  const icon = metadata ? <img src={`${path}${metadata.logo}`}/> : 
+    <Jazzicon address={item.value.asAddress}/>;
+
+  const name = metadata ? metadata.name : item.value.asAddress;
+
+  return (<span className="sol-item solidity-address">
+    { icon }
+    <span>{name}</span>
+  </span>) 
+}
+
+
 
 function deCamelCase (label) {
   return label.replace(/([A-Z])/g, ",$1").toLowerCase().split(',').join(' ');
