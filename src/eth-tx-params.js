@@ -15,7 +15,7 @@ const EthTxParams = ({
       const {arguments: args, abi: { name } } = decoding;
       return (
         <div className="eth-tx-params">
-          <div class="solidity-func-name">{ deCamelCase(name).toUpperCase() }</div>
+          <div className="solidity-func-name">{ deCamelCase(name).toUpperCase() }</div>
           <ol>
             { args.map((argument, index) => {
               return renderNamedItem(argument?.name, argument.value, index)
@@ -38,7 +38,7 @@ function renderNamedItem (name, item, index) {
       <ol>
         {
           item.value.map(({ name, value: item }, index) => {
-            return <li className="solidity-value">
+            return <li className="solidity-value" key={index}>
               {renderNamedItem(name, item, index)}
             </li>
           })
@@ -49,12 +49,6 @@ function renderNamedItem (name, item, index) {
 
   return (<div key={index} className="solidity-named-item solidity-item">
     <span className='param-name'>{ deCamelCase(name) }:</span>
-    { renderItem(item) }
-  </div>)
-}
-
-function renderUnnamedItem (item, index) {
-  return (<div key={index} className="solidity-unnamed-item solidity-item">
     { renderItem(item) }
   </div>)
 }

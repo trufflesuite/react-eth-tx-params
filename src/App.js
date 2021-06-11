@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import EthTxParams from './eth-tx-params';
 import decodings from './decodings';
@@ -30,7 +29,7 @@ class App extends React.Component {
                   <button key={i} onClick={() => {
                     console.log('trying to click', i);
                     this.setState({ template: i });
-                  }}>{desc}</button>
+                  }}>{decodings[i].desc}</button>
                 )  
               })
             }
@@ -79,12 +78,10 @@ function deserializeCalldataDecoding(decoding) {
         class: Codec.Format.Utils.Serial.deserializeType(decoding.class)
       };
     }
-    case "unknown": {
+    case "unknown":
+    case "create":
+    default:
       return decoding;
-    }
-    case "create": {
-      return decoding;
-    }
   }
 }
   
