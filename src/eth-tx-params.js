@@ -35,11 +35,29 @@ const EthTxParams = ({
 function renderNamedItem (name, item, index) {
 
   if (item.type.typeClass === 'struct') {
+
+    const amtAndDec = checkIfPlausibleAmount(item);
+
     return (<details key={index} open>
       <summary>{deCamelCase(name) + ': '}</summary>
       <ol>
         {
-          item.value.map(({ name, value: item }, index) => {
+          item.value.map((data, index) => {
+            const { name, value: item } = data 
+
+            if (amtAndDec && data === amtAndDec.amount) {
+              const amt = item.value.asBN.toString();
+              const firstSeg = amt.substr(0, amt.length - amtAndDec.decimals);
+              const lastSeg = amt.substr(amt.length - amtAndDec.decimals, amtAndDec.decimals);
+              const decimalAmount = `${firstSeg}.${lastSeg}`;
+              return <li className="solidity-named-item solidity-item">
+                <span className='param-name'>{ deCamelCase(name) + ': ' }</span>
+                <span className="sol-item solidity-uint">
+                  {decimalAmount}
+                </span>
+              </li>
+            }
+
             return <li className="solidity-value" key={index}>
               {renderNamedItem(name, item, index)}
             </li>
@@ -109,6 +127,26 @@ function renderAddressComponentFor (item) {
 
 function deCamelCase (label) {
   return label.replace(/([A-Z])/g, ",$1").toLowerCase().split(',').join(' ');
+}
+
+function checkIfPlausibleAmount (struct) {
+
+  const tokenFields = struct.value
+  .filter(struct => struct.name.toLowerCase().includes('token'))
+  .filter(struct => struct.value.type.typeClass === 'address');
+
+  const amountFields = struct.value
+  .filter(struct => struct.name.toLowerCase().includes('amount'))
+  .filter(struct => struct.value?.type?.typeClass.includes('uint'));
+
+  if (tokenFields.length === 1 && amountFields.length === 1) {
+    const metadata = contractMap[tokenFields[0].value.value.asAddress]
+    if (metadata?.decimals) {
+      return { decimals: metadata.decimals, amount: amountFields[0] };
+    }
+  }
+
+  return false;
 }
 
 EthTxParams.propTypes = {
