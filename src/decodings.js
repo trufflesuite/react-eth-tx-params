@@ -8366,5 +8366,280 @@ export default [
       }
     },
     "desc": "Uniswap v3 swap"
+  },
+  {
+    "tx": {
+      "kind": "function",
+      "class": {
+        "typeClass": "contract",
+        "kind": "native",
+        "id": "shimmedcompilationNumber(0):79",
+        "typeName": "Aggregator",
+        "contractKind": "contract",
+        "payable": false
+      },
+      "abi": {
+        "inputs": [
+          {
+            "internalType": "contract IERC20",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "participants",
+            "type": "address[]"
+          },
+          {
+            "internalType": "function (uint256[]) external returns (uint256)",
+            "name": "reduce",
+            "type": "function"
+          }
+        ],
+        "name": "aggregateBalances",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      "arguments": [
+        {
+          "name": "token",
+          "value": {
+            "type": {
+              "typeClass": "contract",
+              "kind": "native",
+              "id": "shimmedcompilationNumber(0):200",
+              "typeName": "IERC20",
+              "contractKind": "interface",
+              "payable": false
+            },
+            "kind": "value",
+            "value": {
+              "kind": "unknown",
+              "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+              "rawAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+            }
+          }
+        },
+        {
+          "name": "participants",
+          "value": {
+            "type": {
+              "typeClass": "array",
+              "baseType": {
+                "typeClass": "address",
+                "kind": "general",
+                "typeHint": "address"
+              },
+              "kind": "dynamic",
+              "location": "calldata",
+              "typeHint": "address[]"
+            },
+            "kind": "value",
+            "value": [
+              {
+                "type": {
+                  "typeClass": "address",
+                  "kind": "general",
+                  "typeHint": "address"
+                },
+                "kind": "value",
+                "value": {
+                  "asAddress": "0x55e2780588aa5000F464f700D2676fD0a22Ee160",
+                  "rawAsHex": "0x00000000000000000000000055e2780588aa5000f464f700d2676fd0a22ee160"
+                }
+              },
+              {
+                "type": {
+                  "typeClass": "address",
+                  "kind": "general",
+                  "typeHint": "address"
+                },
+                "kind": "value",
+                "value": {
+                  "asAddress": "0xefef50EbACd8DA3c13932ac204361B704Eb8292C",
+                  "rawAsHex": "0x000000000000000000000000efef50ebacd8da3c13932ac204361b704eb8292c"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "reduce",
+          "value": {
+            "type": {
+              "typeClass": "function",
+              "visibility": "external",
+              "kind": "specific",
+              "mutability": "nonpayable",
+              "inputParameterTypes": [
+                {
+                  "typeClass": "array",
+                  "baseType": {
+                    "typeClass": "uint",
+                    "bits": 256,
+                    "typeHint": "uint256"
+                  },
+                  "kind": "dynamic",
+                  "location": "memory",
+                  "typeHint": "uint256[]"
+                }
+              ],
+              "outputParameterTypes": [
+                {
+                  "typeClass": "uint",
+                  "bits": 256,
+                  "typeHint": "uint256"
+                }
+              ]
+            },
+            "kind": "value",
+            "value": {
+              "kind": "known",
+              "contract": {
+                "kind": "known",
+                "address": "0xDAaF22C3Eae9d282823B4f1bBE2C5811FB2272Fb",
+                "rawAddress": "0xdaaf22c3eae9d282823b4f1bbe2c5811fb2272fb",
+                "class": {
+                  "typeClass": "contract",
+                  "kind": "native",
+                  "id": "shimmedcompilationNumber(0):125",
+                  "typeName": "Strategies",
+                  "contractKind": "contract",
+                  "payable": false
+                }
+              },
+              "selector": "0xa8606b82",
+              "abi": {
+                "inputs": [
+                  {
+                    "internalType": "uint256[]",
+                    "name": "values",
+                    "type": "uint256[]"
+                  }
+                ],
+                "name": "average",
+                "outputs": [
+                  {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                  }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+              }
+            }
+          }
+        }
+      ],
+      "selector": "0x974b5eff",
+      "decodingMode": "full"
+    },
+    "definitions": {
+      "compilationsById": {
+        "shimmedcompilationNumber(0)": {
+          "sourcesById": {
+            "0": {
+              "language": "Solidity",
+              "lines": [
+                "/**",
+                " *Submitted for verification at Etherscan.io on 20XX-XX-XX",
+                "*/",
+                "",
+                "// SPDX-License-Identifier: UNLICENSED\rpragma solidity ^0.8.5;\r\r\rcontract Aggregator {\r    event Result(uint256 result);\r\r    function aggregateBalances(\r        IERC20 token,\r        address[] calldata participants,\r        function (uint256[] memory) external returns (uint256) reduce\r    )\r        public\r        returns (uint256)\r    {\r        uint256[] memory balances = new uint256[](participants.length);\r        for (uint256 i = 0; i < participants.length; i++) {\r            address participant = participants[i];\r            balances[i] = token.balanceOf(participant);\r        }\r\r        uint256 result = reduce(balances);\r        emit Result(result);\r\r        return result;\r    }\r}\r\rcontract Strategies {\r    function average(uint256[] memory values)\r        public\r        pure\r        returns (uint256)\r    {\r        require(values.length > 0, \"Must provide at least one value\");\r\r        uint256 sum = 0;\r        for (uint256 i = 0; i < values.length; i++) {\r            sum += values[i];\r        }\r\r        return sum / values.length;\r    }\r}\r\r\r interface IERC20 {\r    /**\r     * @dev Returns the amount of tokens in existence.\r     */\r    function totalSupply() external view returns (uint256);\r\r    /**\r     * @dev Returns the amount of tokens owned by `account`.\r     */\r    function balanceOf(address account) external view returns (uint256);\r\r    /**\r     * @dev Moves `amount` tokens from the caller's account to `recipient`.\r     *\r     * Returns a boolean value indicating whether the operation succeeded.\r     *\r     * Emits a {Transfer} event.\r     */\r    function transfer(address recipient, uint256 amount) external returns (bool);\r\r    /**\r     * @dev Returns the remaining number of tokens that `spender` will be\r     * allowed to spend on behalf of `owner` through {transferFrom}. This is\r     * zero by default.\r     *\r     * This value changes when {approve} or {transferFrom} are called.\r     */\r    function allowance(address owner, address spender) external view returns (uint256);\r\r    /**\r     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\r     *\r     * Returns a boolean value indicating whether the operation succeeded.\r     *\r     * IMPORTANT: Beware that changing an allowance with this method brings the risk\r     * that someone may use both the old and the new allowance by unfortunate\r     * transaction ordering. One possible solution to mitigate this race\r     * condition is to first reduce the spender's allowance to 0 and set the\r     * desired value afterwards:\r     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\r     *\r     * Emits an {Approval} event.\r     */\r    function approve(address spender, uint256 amount) external returns (bool);\r\r    /**\r     * @dev Moves `amount` tokens from `sender` to `recipient` using the\r     * allowance mechanism. `amount` is then deducted from the caller's\r     * allowance.\r     *\r     * Returns a boolean value indicating whether the operation succeeded.\r     *\r     * Emits a {Transfer} event.\r     */\r    function transferFrom(\r        address sender,\r        address recipient,\r        uint256 amount\r    ) external returns (bool);\r\r    /**\r     * @dev Emitted when `value` tokens are moved from one account (`from`) to\r     * another (`to`).\r     *\r     * Note that `value` may be zero.\r     */\r    event Transfer(address indexed from, address indexed to, uint256 value);\r\r    /**\r     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\r     * a call to {approve}. `value` is the new allowance.\r     */\r    event Approval(address indexed owner, address indexed spender, uint256 value);\r}\r"
+              ]
+            }
+          },
+          "sourceRangesById": {
+            "5": {
+              "source": {
+                "id": "0"
+              },
+              "from": {
+                "line": 4,
+                "column": 91
+              },
+              "to": {
+                "line": 4,
+                "column": 119
+              }
+            },
+            "79": {
+              "source": {
+                "id": "0"
+              },
+              "from": {
+                "line": 4,
+                "column": 65
+              },
+              "to": {
+                "line": 4,
+                "column": 692
+              }
+            },
+            "125": {
+              "source": {
+                "id": "0"
+              },
+              "from": {
+                "line": 4,
+                "column": 695
+              },
+              "to": {
+                "line": 4,
+                "column": 1057
+              }
+            },
+            "190": {
+              "source": {
+                "id": "0"
+              },
+              "from": {
+                "line": 4,
+                "column": 3347
+              },
+              "to": {
+                "line": 4,
+                "column": 3418
+              }
+            },
+            "199": {
+              "source": {
+                "id": "0"
+              },
+              "from": {
+                "line": 4,
+                "column": 3578
+              },
+              "to": {
+                "line": 4,
+                "column": 3655
+              }
+            },
+            "200": {
+              "source": {
+                "id": "0"
+              },
+              "from": {
+                "line": 4,
+                "column": 1062
+              },
+              "to": {
+                "line": 4,
+                "column": 3657
+              }
+            }
+          }
+        }
+      }
+    },
+    "desc": "Function pointer"
   }
 ]
