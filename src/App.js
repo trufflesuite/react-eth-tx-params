@@ -42,18 +42,22 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      if (txParams && txParams.to) {
+      if (template > -1 && txs[template]?.to) {
+        const txParams = txs[template];
+        setData({});
+        setDefintions({});
+        setLoading(true);
+
         const { decoding, definitions } = await getDecoding(txParams);
         setDefintions(definitions);
 
         const data = deserializeCalldataDecoding(decoding);
-        console.log("Decoding: %o", data);
 
         setData(data);
         setLoading(false);
       }
     })();
-  }, [template, txParams]);
+  }, [template]);
 
   const deserializeCalldataDecoding = (decoding) => {
     switch (decoding.kind) {
@@ -113,7 +117,6 @@ const App = () => {
               <button
                 key={i}
                 onClick={() => {
-                  setLoading(true);
                   setTemplate(i);
                 }}
               >
