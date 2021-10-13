@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { css } from "@emotion/react";
 import "./App.css";
 import EthTxParams from "./eth-tx-params";
 // import decodings from "./decodings";
 import * as Codec from "@truffle/codec";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { txs, getDecoding } from "./generate-decodings";
 
 const App = () => {
   const [template, setTemplate] = useState(-1);
   const [txParams, setTxParams] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const [definitions, setDefintions] = useState({});
   const [data, setData] = useState({});
@@ -31,6 +36,7 @@ const App = () => {
         console.log("Decoding: %o", data);
 
         setData(data);
+        setLoading(false);
       }
     })();
   }, [template, txParams]);
@@ -74,6 +80,15 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <h1>Tx Param Component</h1>
+
+        <Button
+          variant="contained"
+          size="large"
+          style={{ marginBottom: "1rem" }}
+        >
+          Connect wallet
+        </Button>
+
         <a href="https://github.com/danfinlay/react-eth-tx-params">
           Fork on GitHub
         </a>
@@ -83,7 +98,7 @@ const App = () => {
               <button
                 key={i}
                 onClick={() => {
-                  console.log("trying to click", i);
+                  setLoading(true);
                   setTemplate(i);
                 }}
               >
@@ -91,17 +106,58 @@ const App = () => {
               </button>
             );
           })}
+          <button
+            key={5}
+            onClick={() => {
+              setTemplate(5);
+            }}
+          >
+            Custom Tx
+          </button>
         </div>
       </header>
 
       <main>
-        {/* {data && definitions ? (
-          <EthTxParams decoding={data} definitions={definitions}></EthTxParams>
-        ) : (
-          "Loading ..."
-        )} */}
-        {template >= 0 ? (
-          <EthTxParams decoding={data} definitions={definitions}></EthTxParams>
+        {template === 5 ? (
+          <div
+            style={{ backgroundColor: "#fff", padding: "2em", width: "30%" }}
+          >
+            <TextField
+              style={{ width: "100%", padding: "1rem 0" }}
+              id="outlined-target-address"
+              label="Target Address"
+              onChange={() => {}}
+              css={css`
+                width: 100%;
+              `}
+            />
+
+            <TextField
+              style={{ width: "100%", padding: "1rem 0" }}
+              id="outlined-multiline-flexible"
+              label="Tx Data"
+              multiline
+              maxRows={8}
+              rows={8}
+              onChange={() => {}}
+              css={css`
+                width: 100%;
+              `}
+            />
+
+            <Button variant="contained" size="large">
+              Decode Tx Data
+            </Button>
+          </div>
+        ) : template >= 0 ? (
+          loading ? (
+            <CircularProgress />
+          ) : (
+            <EthTxParams
+              decoding={data}
+              definitions={definitions}
+            ></EthTxParams>
+          )
         ) : (
           "Please select a tx to decode ! "
         )}

@@ -2,7 +2,8 @@
   text-align: center;
 }
 
-html, body {
+html,
+body {
   background-color: rgb(179, 179, 179);
 }
 
@@ -36,6 +37,7 @@ main {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding-bottom: 0.5rem;
 }
 
 .App-link {
