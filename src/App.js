@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import "./App.css";
 import EthTxParams from "./eth-tx-params";
+
+// import { Web3ReactProvider } from "@web3-react/core";
+// import { Web3Provider } from "@ethersproject/providers";
+// import { useWeb3React } from "@web3-react/core";
+
 // import decodings from "./decodings";
 import * as Codec from "@truffle/codec";
 import TextField from "@mui/material/TextField";
@@ -10,7 +15,16 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import { txs, getDecoding } from "./generate-decodings";
 
+// const getLibrary = (provider: any): Web3Provider => {
+//   const library = new Web3Provider(provider);
+//   library.pollingInterval = 12000;
+//   return library;
+// };
+
 const App = () => {
+  // const { connector, library, chainId, account, activate, deactivate, active } =
+  //   useWeb3React();
+
   const [template, setTemplate] = useState(-1);
   const [txParams, setTxParams] = useState({});
   const [loading, setLoading] = useState(false);
@@ -78,6 +92,7 @@ const App = () => {
 
   return (
     <div className="App">
+      {/* <Web3ReactProvider getLibrary={getLibrary}> */}
       <header className="App-header">
         <h1>Tx Param Component</h1>
 
@@ -162,6 +177,7 @@ const App = () => {
           "Please select a tx to decode ! "
         )}
       </main>
+      {/* </Web3ReactProvider> */}
     </div>
   );
 };
