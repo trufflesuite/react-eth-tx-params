@@ -52,7 +52,7 @@ const App = () => {
     setData({});
     setDefintions({});
     setLoading(true);
-    const { decoding, definitions } = await getDecoding(txParams);
+    const { decoding, definitions } = await getDecoding(txParams, chainId);
     setDefintions(definitions);
     const data = deserializeCalldataDecoding(decoding);
     setData(data);

@@ -57,7 +57,7 @@ export const txs = [
 // // }
 
 export async function getDecoding(txParams, chainId = 1) {
-  const { REACT_APP_BASE_URI, REACT_APP_CHAIN_ID } = process.env;
+  const { REACT_APP_BASE_URI } = process.env;
 
   const base = `${REACT_APP_BASE_URI}/txExtra`;
   const url = `${base}?to=${txParams.to}&from=${txParams.from}&data=${txParams.data}&chain=${REACT_APP_CHAIN_ID}`;
