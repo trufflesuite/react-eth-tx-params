@@ -3,42 +3,36 @@ import { css } from "@emotion/react";
 import "./App.css";
 import EthTxParams from "./eth-tx-params";
 
-// import { Web3ReactProvider } from "@web3-react/core";
-// import { Web3Provider } from "@ethersproject/providers";
-// import { useWeb3React } from "@web3-react/core";
+import { useWeb3React } from "@web3-react/core";
+import { InjectedConnector } from "@web3-react/injected-connector";
 
 // import decodings from "./decodings";
 import * as Codec from "@truffle/codec";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import LoadingButton from "@mui/lab/LoadingButton";
+
 import CircularProgress from "@mui/material/CircularProgress";
+import Chip from "@mui/material/Chip";
 
 import { txs, getDecoding } from "./generate-decodings";
 
-// const getLibrary = (provider: any): Web3Provider => {
-//   const library = new Web3Provider(provider);
-//   library.pollingInterval = 12000;
-//   return library;
-// };
+// adding support for Kovan and Mainnet
+export const injected = new InjectedConnector({
+  supportedChainIds: [1, 42],
+});
 
 const App = () => {
-  // const { connector, library, chainId, account, activate, deactivate, active } =
-  //   useWeb3React();
+  const { chainId, account, activate, deactivate, active } = useWeb3React();
 
   const [template, setTemplate] = useState(-1);
-  const [txParams, setTxParams] = useState({});
-  const [loading, setLoading] = useState(false);
-
   const [definitions, setDefintions] = useState({});
   const [data, setData] = useState({});
 
-  // make sure we have a template selection
-  useEffect(() => {
-    if (template >= 0) {
-      setTxParams(txs[template]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [template]);
+  //boolean flags to mange UI state
+  const [loading, setLoading] = useState(false);
+  const [connecting, setConnecting] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -58,6 +52,37 @@ const App = () => {
       }
     })();
   }, [template]);
+
+  const handleWalletConnect = () => {
+    try {
+      setConnecting(true);
+      activate(injected, (error) => setConnecting(false));
+      setConnecting(false);
+    } catch (error) {
+      setConnecting(false);
+    }
+  };
+
+  const handleWalletDisconnect = () => {
+    try {
+      setConnecting(true);
+      deactivate();
+      setConnecting(false);
+    } catch (error) {
+      setConnecting(false);
+    }
+  };
+
+  const mapNetworkToChainid = (chainId) => {
+    switch (chainId) {
+      case 1:
+        return "Mainnet";
+      case 42:
+        return "Kovan";
+      default:
+        return "Unknown !";
+    }
+  };
 
   const deserializeCalldataDecoding = (decoding) => {
     switch (decoding.kind) {
@@ -96,17 +121,30 @@ const App = () => {
 
   return (
     <div className="App">
-      {/* <Web3ReactProvider getLibrary={getLibrary}> */}
-      <header className="App-header">
-        <h1>Tx Param Component</h1>
-
-        <Button
+      <section className="App-wallet">
+        <LoadingButton
+          loading={connecting}
           variant="contained"
           size="large"
-          style={{ marginBottom: "1rem" }}
+          onClick={() =>
+            active ? handleWalletDisconnect() : handleWalletConnect()
+          }
         >
-          Connect wallet
-        </Button>
+          {active
+            ? "Disconnect"
+            : connecting
+            ? "Connecting..."
+            : "Connect wallet"}
+        </LoadingButton>
+        {active && chainId && account ? (
+          <Stack spacing={1} direction="row">
+            <Chip label={mapNetworkToChainid(chainId)} />
+            <Chip label={account} variant="outlined" />
+          </Stack>
+        ) : null}
+      </section>
+      <header className="App-header">
+        <h1>Tx Param Component</h1>
 
         <a href="https://github.com/danfinlay/react-eth-tx-params">
           Fork on GitHub
@@ -180,7 +218,6 @@ const App = () => {
           "Please select a tx to decode ! "
         )}
       </main>
-      {/* </Web3ReactProvider> */}
     </div>
   );
 };
