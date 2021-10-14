@@ -37,6 +37,7 @@ const App = () => {
   //boolean flags to mange UI state
   const [loading, setLoading] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [showDecodingResults, setShowDecodingResults] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -195,8 +196,7 @@ const App = () => {
             disabled={!active}
             onClick={() => {
               setTemplate(5);
-              setTxData("");
-              setTxTargetAddress("");
+              setShowDecodingResults(false);
             }}
           >
             Custom Tx
@@ -240,7 +240,10 @@ const App = () => {
                   loading={loading}
                   variant="contained"
                   size="large"
-                  onClick={handleTxDecoding}
+                  onClick={() => {
+                    setShowDecodingResults(true);
+                    handleTxDecoding();
+                  }}
                 >
                   Decode Tx Data
                 </LoadingButton>
@@ -248,12 +251,12 @@ const App = () => {
 
               {loading ? (
                 <CircularProgress />
-              ) : (
+              ) : showDecodingResults ? (
                 <EthTxParams
                   decoding={data}
                   definitions={definitions}
                 ></EthTxParams>
-              )}
+              ) : null}
             </Stack>
           ) : loading ? (
             <CircularProgress />

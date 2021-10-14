@@ -1,6 +1,4 @@
 const fetch = require("node-fetch");
-// const fs = require("fs");
-// const path = require("path");
 
 export const txs = [
   // Airswap tx 0xc7ecb707d4704fe60909fee09f3b4ef67aa142e60ecad423041fe26edc856379
@@ -36,31 +34,11 @@ export const txs = [
   },
 ];
 
-// const decodings = [];
-
-// run().catch(console.error);
-
-// // async function run() {
-// //   for await (tx of txs) {
-// //     const { decoding, definitions } = await getDecoding(tx);
-// //     const data = {
-// //       tx: decoding,
-// //       definitions,
-// //       desc: tx.desc,
-// //     };
-// //     decodings.push(data);
-// //   }
-// //   fs.writeFileSync(
-// //     path.join(__dirname, "decodings.js"),
-// //     `export default ${JSON.stringify(decodings, null, 2)}`
-// //   );
-// // }
-
 export async function getDecoding(txParams, chainId = 1) {
   const { REACT_APP_BASE_URI } = process.env;
 
   const base = `${REACT_APP_BASE_URI}/txExtra`;
-  const url = `${base}?to=${txParams.to}&from=${txParams.from}&data=${txParams.data}&chain=${REACT_APP_CHAIN_ID}`;
+  const url = `${base}?to=${txParams.to}&from=${txParams.from}&data=${txParams.data}&chain=${chainId}`;
   const result = await fetch(url).then((res) => res.json());
   return result;
 }
