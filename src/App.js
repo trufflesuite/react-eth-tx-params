@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { css } from "@emotion/react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import EthTxParams from "./eth-tx-params";
 
@@ -12,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Alert from "@mui/material/Alert";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
@@ -26,6 +26,10 @@ export const injected = new InjectedConnector({
 const App = () => {
   const { chainId, account, activate, deactivate, active } = useWeb3React();
 
+  // input data
+  const [txTargetAddress, setTxTargetAddress] = useState("");
+  const [txData, setTxData] = useState("");
+
   const [template, setTemplate] = useState(-1);
   const [definitions, setDefintions] = useState({});
   const [data, setData] = useState({});
@@ -38,20 +42,22 @@ const App = () => {
     (async () => {
       if (template > -1 && txs[template]?.to) {
         const txParams = txs[template];
-        setData({});
-        setDefintions({});
-        setLoading(true);
-
-        const { decoding, definitions } = await getDecoding(txParams);
-        setDefintions(definitions);
-
-        const data = deserializeCalldataDecoding(decoding);
-
-        setData(data);
-        setLoading(false);
+        await decodeTx(txParams);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template]);
+
+  const decodeTx = async (txParams) => {
+    setData({});
+    setDefintions({});
+    setLoading(true);
+    const { decoding, definitions } = await getDecoding(txParams);
+    setDefintions(definitions);
+    const data = deserializeCalldataDecoding(decoding);
+    setData(data);
+    setLoading(false);
+  };
 
   const handleWalletConnect = () => {
     try {
@@ -83,6 +89,19 @@ const App = () => {
         return "Unknown !";
     }
   };
+
+  const handleTxDecoding = useCallback(() => {
+    (async () => {
+      const txParams = {
+        desc: "Generic tx decoding",
+        from: account,
+        to: txTargetAddress,
+        data: txData,
+      };
+      await decodeTx(txParams);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txTargetAddress, txData, account]);
 
   const deserializeCalldataDecoding = (decoding) => {
     switch (decoding.kind) {
@@ -140,40 +159,169 @@ const App = () => {
           <Stack spacing={1} direction="row">
             <Chip label={mapNetworkToChainid(chainId)} />
             <Chip label={account} variant="outlined" />
+            <Chip
+              label="Fork on GitHub"
+              variant="outlined"
+              onClick={() =>
+                (window.location.href =
+                  "https://github.com/danfinlay/react-eth-tx-params")
+              }
+            ></Chip>
           </Stack>
         ) : null}
       </section>
       <header className="App-header">
         <h1>Tx Param Component</h1>
-
-        <a href="https://github.com/danfinlay/react-eth-tx-params">
-          Fork on GitHub
-        </a>
-        <div>
+        <Stack spacing={1} direction="row">
           {txs.map((decoding, i) => {
             return (
-              <button
+              <Button
+                variant="contained"
+                size="small"
                 key={i}
+                disabled={!active}
                 onClick={() => {
                   setTemplate(i);
                 }}
               >
                 {txs[i].desc}
-              </button>
+              </Button>
             );
           })}
-          <button
+          <Button
+            variant="contained"
+            size="small"
             key={5}
+            disabled={!active}
             onClick={() => {
               setTemplate(5);
+              setTxData("");
+              setTxTargetAddress("");
             }}
           >
             Custom Tx
-          </button>
-        </div>
+          </Button>
+        </Stack>
       </header>
 
       <main>
+        {active ? (
+          template === 5 ? (
+            <Stack spacing={1} direction="row">
+              <Stack
+                spacing={2}
+                style={{
+                  backgroundColor: "#fff",
+                  padding: "2em",
+                  width: "400px",
+                }}
+              >
+                <TextField
+                  style={{ width: "100%" }}
+                  id="outlined-target-address"
+                  label="Target Address"
+                  disabled={loading}
+                  onChange={({ target }) => setTxTargetAddress(target.value)}
+                />
+
+                <TextField
+                  style={{ width: "100%" }}
+                  id="outlined-multiline-flexible"
+                  label="Tx Data"
+                  disabled={loading}
+                  multiline
+                  maxRows={8}
+                  rows={8}
+                  onChange={({ target }) => setTxData(target.value)}
+                />
+
+                <LoadingButton
+                  disabled={!txTargetAddress || !txData}
+                  loading={loading}
+                  variant="contained"
+                  size="large"
+                  onClick={handleTxDecoding}
+                >
+                  Decode Tx Data
+                </LoadingButton>
+              </Stack>
+
+              {loading ? (
+                <CircularProgress />
+              ) : (
+                <EthTxParams
+                  decoding={data}
+                  definitions={definitions}
+                ></EthTxParams>
+              )}
+            </Stack>
+          ) : loading ? (
+            <CircularProgress />
+          ) : (
+            <EthTxParams
+              decoding={data}
+              definitions={definitions}
+            ></EthTxParams>
+          )
+        ) : (
+          <Alert severity="info">Please connect your wallet to start!</Alert>
+        )}
+      </main>
+
+      {/* <main>
+        {active && template === 5 ? (
+          <Stack
+            spacing={2}
+            style={{ backgroundColor: "#fff", padding: "2em", width: "30%" }}
+          >
+            <TextField
+              style={{ width: "100%" }}
+              id="outlined-target-address"
+              label="Target Address"
+              onChange={({ target }) => setTxTargetAddress(target.value)}
+              css={css`
+                width: 100%;
+              `}
+            />
+
+            <TextField
+              style={{ width: "100%" }}
+              id="outlined-multiline-flexible"
+              label="Tx Data"
+              multiline
+              maxRows={8}
+              rows={8}
+              onChange={({ target }) => setTxData(target.value)}
+              css={css`
+                width: 100%;
+              `}
+            />
+
+            <LoadingButton
+              disabled={!txTargetAddress || !txData}
+              variant="contained"
+              size="large"
+              onClick={handleTxDecoding}
+            >
+              Decode Tx Data
+            </LoadingButton>
+          </Stack>
+        ) : null}
+        {active ? (
+          loading ? (
+            <CircularProgress />
+          ) : (
+            <EthTxParams
+              decoding={data}
+              definitions={definitions}
+            ></EthTxParams>
+          )
+        ) : (
+          <Alert severity="info">Please connect your wallet to start!</Alert>
+        )}
+      </main> */}
+
+      {/* <main>
         {template === 5 ? (
           <div
             style={{ backgroundColor: "#fff", padding: "2em", width: "30%" }}
@@ -182,7 +330,7 @@ const App = () => {
               style={{ width: "100%", padding: "1rem 0" }}
               id="outlined-target-address"
               label="Target Address"
-              onChange={() => {}}
+              onChange={({ target }) => setTxTargetAddress(target.value)}
               css={css`
                 width: 100%;
               `}
@@ -195,15 +343,20 @@ const App = () => {
               multiline
               maxRows={8}
               rows={8}
-              onChange={() => {}}
+              onChange={({ target }) => setTxData(target.value)}
               css={css`
                 width: 100%;
               `}
             />
 
-            <Button variant="contained" size="large">
+            <LoadingButton
+              disabled={!txTargetAddress || !txData}
+              variant="contained"
+              size="large"
+              onClick={handleTxDecoding}
+            >
               Decode Tx Data
-            </Button>
+            </LoadingButton>
           </div>
         ) : template >= 0 ? (
           loading ? (
@@ -214,10 +367,10 @@ const App = () => {
               definitions={definitions}
             ></EthTxParams>
           )
-        ) : (
-          "Please select a tx to decode ! "
-        )}
-      </main>
+        ) : !active ? (
+          <Alert severity="info">Please connect your wallet to start!</Alert>
+        ) : null}
+      </main> */}
     </div>
   );
 };
