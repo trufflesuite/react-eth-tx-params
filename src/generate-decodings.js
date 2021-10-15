@@ -42,3 +42,12 @@ export async function getDecoding(txParams, chainId = 1) {
   const result = await fetch(url).then((res) => res.json());
   return result;
 }
+
+export async function fetchProjectInfo(to, chainId = 1) {
+  const { REACT_APP_BASE_URI } = process.env;
+
+  const base = `${REACT_APP_BASE_URI}/fetch-project`;
+  const url = `${base}?to=${to}&network-id=${chainId}`;
+  const result = await fetch(url).then((res) => res.json());
+  return result;
+}

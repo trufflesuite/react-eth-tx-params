@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import EthTxParams from "./eth-tx-params";
-
+import { forAddress } from "@truffle/decoder";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 
+import Web3HttpProvider from "web3-providers-http";
+
 // import decodings from "./decodings";
+import { JsonRpcSigner, JsonRpcProvider } from "@ethersproject/providers";
+
 import * as Codec from "@truffle/codec";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -16,7 +20,7 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 
-import { txs, getDecoding } from "./generate-decodings";
+import { txs, getDecoding, fetchProjectInfo } from "./generate-decodings";
 
 // adding support for Kovan and Mainnet
 export const injected = new InjectedConnector({
@@ -24,7 +28,10 @@ export const injected = new InjectedConnector({
 });
 
 const App = () => {
-  const { chainId, account, activate, deactivate, active } = useWeb3React();
+  const { chainId, account, activate, deactivate, active, library } =
+    useWeb3React();
+
+  console.log("🚀 ~ file: App.js ~ line 30 ~ App ~ library", library);
 
   // input data
   const [txTargetAddress, setTxTargetAddress] = useState("");
@@ -43,12 +50,13 @@ const App = () => {
     (async () => {
       if (template > -1 && txs[template]?.to) {
         const txParams = txs[template];
-        await decodeTx(txParams);
+        await decodeTxClient(txParams);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template]);
 
+  // decode TX (server side) - DEPRECATED
   const decodeTx = async (txParams) => {
     setData({});
     setDefintions({});
@@ -57,6 +65,50 @@ const App = () => {
     setDefintions(definitions);
     const data = deserializeCalldataDecoding(decoding);
     setData(data);
+    setLoading(false);
+  };
+
+  // decode TX (client side)
+  const decodeTxClient = async (txParams) => {
+    const { to } = txParams;
+
+    setData({});
+    setDefintions({});
+    setLoading(true);
+
+    // fetching project info from backend service, chainId already injested through MM
+    const projectInfo = await fetchProjectInfo(to, chainId);
+
+    // NOT WORKING :(
+    // const decoder = await forAddress(to, {
+    //   provider: library.provider,
+    //   projectInfo,
+    // });
+
+    // NOT WORKING :(
+    // const decoder = await forAddress(to, {
+    //   provider: new JsonRpcProvider("https://mainnet.infura.io/v3/e24b1e96c17e4aa995ad8c0ee861667c"),
+    //   projectInfo,
+    // });
+
+    // WORKING :)
+    const decoder = await forAddress(to, {
+      provider: new Web3HttpProvider(
+        "https://mainnet.infura.io/v3/e24b1e96c17e4aa995ad8c0ee861667c"
+      ),
+      projectInfo,
+    });
+    console.log("🚀 ~ decodeTxClient ~ decoder", decoder);
+
+    // const decoding = decoder.decodeTransaction();
+    // console.log(
+    //   "🚀 ~ file: App.js ~ line 113 ~ decodeTxClient ~ decoding",
+    //   decoding
+    // );
+
+    // setDefintions(definitions);
+    // const data = deserializeCalldataDecoding(decoding);
+    // setData(data);
     setLoading(false);
   };
 
@@ -99,7 +151,7 @@ const App = () => {
         to: txTargetAddress,
         data: txData,
       };
-      await decodeTx(txParams);
+      await decodeTxClient(txParams);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txTargetAddress, txData, account]);

@@ -14,6 +14,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@truffle/codec": "^0.10.10-cheerios.1",
+    "@truffle/decoder": "^5.0.11",
     "@ukstv/jazzicon-react": "^1.0.0",
     "@web3-react/core": "^6.1.9",
     "@web3-react/injected-connector": "^6.0.7",
@@ -22,7 +23,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "web3-providers-http": "^1.6.0"
   },
   "scripts": {
     "start": "react-scripts start",
