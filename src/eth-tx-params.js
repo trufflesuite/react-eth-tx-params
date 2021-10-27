@@ -137,7 +137,7 @@ function renderAddressComponentFor(item) {
   const metadata = contractMap[item.value.asAddress];
 
   const icon = metadata ? (
-    <img src={`${path}${metadata.logo}`} />
+    <img src={`${path}${metadata.logo}`} alt="" />
   ) : (
     <Jazzicon address={item.value.asAddress} />
   );

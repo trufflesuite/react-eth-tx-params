@@ -13,6 +13,7 @@ import { JsonRpcSigner, JsonRpcProvider } from "@ethersproject/providers";
 import * as Codec from "@truffle/codec";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
 import Stack from "@mui/material/Stack";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Alert from "@mui/material/Alert";
@@ -20,7 +21,12 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 
-import { txs, getDecoding, fetchProjectInfo } from "./generate-decodings";
+import {
+  txs,
+  getDecoding,
+  fetchProjectInfo,
+  gatherDefinitions,
+} from "./generate-decodings";
 
 // adding support for Kovan and Mainnet
 export const injected = new InjectedConnector({
@@ -30,8 +36,6 @@ export const injected = new InjectedConnector({
 const App = () => {
   const { chainId, account, activate, deactivate, active, library } =
     useWeb3React();
-
-  console.log("🚀 ~ file: App.js ~ line 30 ~ App ~ library", library);
 
   // input data
   const [txTargetAddress, setTxTargetAddress] = useState("");
@@ -50,7 +54,7 @@ const App = () => {
     (async () => {
       if (template > -1 && txs[template]?.to) {
         const txParams = txs[template];
-        await decodeTxClient(txParams);
+        await decodeTx(txParams);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,7 +74,7 @@ const App = () => {
 
   // decode TX (client side)
   const decodeTxClient = async (txParams) => {
-    const { to } = txParams;
+    const { to, data } = txParams;
 
     setData({});
     setDefintions({});
@@ -94,21 +98,34 @@ const App = () => {
     // WORKING :)
     const decoder = await forAddress(to, {
       provider: new Web3HttpProvider(
-        "https://mainnet.infura.io/v3/e24b1e96c17e4aa995ad8c0ee861667c"
+        `https://${mapNetworkToChainid(
+          chainId
+        )}.infura.io/v3/e24b1e96c17e4aa995ad8c0ee861667c`
       ),
       projectInfo,
     });
-    console.log("🚀 ~ decodeTxClient ~ decoder", decoder);
 
-    // const decoding = decoder.decodeTransaction();
-    // console.log(
-    //   "🚀 ~ file: App.js ~ line 113 ~ decodeTxClient ~ decoding",
-    //   decoding
-    // );
+    // build the strucutre of the tx
+    const tx = {
+      from: account,
+      to,
+      input: data,
+      blockNumber: null,
+    };
 
-    // setDefintions(definitions);
-    // const data = deserializeCalldataDecoding(decoding);
-    // setData(data);
+    // build defintions
+    const definitions = await gatherDefinitions({
+      compilations: projectInfo?.compilations,
+      referenceDeclarations: decoder?.projectDecoder?.referenceDeclarations,
+    });
+    setDefintions(definitions);
+
+    // build decoding
+    const decoding = deserializeCalldataDecoding(
+      await decoder.decodeTransaction(tx)
+    );
+    setData(decoding);
+
     setLoading(false);
   };
 
@@ -135,11 +152,11 @@ const App = () => {
   const mapNetworkToChainid = (chainId) => {
     switch (chainId) {
       case 1:
-        return "Mainnet";
+        return "mainnet";
       case 42:
-        return "Kovan";
+        return "kovan";
       default:
-        return "Unknown !";
+        return "unknown!";
     }
   };
 
@@ -226,21 +243,24 @@ const App = () => {
       <header className="App-header">
         <h1>Tx Param Component</h1>
         <Stack spacing={1} direction="row">
-          {txs.map((decoding, i) => {
-            return (
-              <Button
-                variant="contained"
-                size="small"
-                key={i}
-                disabled={!active}
-                onClick={() => {
-                  setTemplate(i);
-                }}
-              >
-                {txs[i].desc}
-              </Button>
-            );
-          })}
+          <ButtonGroup disableElevation variant="contained">
+            {txs.map((decoding, i) => {
+              return (
+                <Button
+                  variant="contained"
+                  size="small"
+                  key={i}
+                  disabled={!active}
+                  onClick={() => {
+                    setTemplate(i);
+                  }}
+                >
+                  {txs[i].desc}
+                </Button>
+              );
+            })}
+          </ButtonGroup>
+
           <Button
             variant="contained"
             size="small"
