@@ -29,12 +29,9 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 
-import {
-  txs,
-  getDecoding,
-  fetchProjectInfo,
-  gatherDefinitions,
-} from "./generate-decodings";
+import { txs, getDecoding, fetchProjectInfo } from "./generate-decodings";
+
+import { gatherDefinitions } from "./utils";
 
 // adding support for Kovan and Mainnet
 const supportedChainIds = [1, 42];
