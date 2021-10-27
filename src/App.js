@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
 import "./App.css";
 import EthTxParams from "./eth-tx-params";
 import { forAddress } from "@truffle/decoder";
@@ -7,8 +8,7 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 
 import Web3HttpProvider from "web3-providers-http";
 
-// import decodings from "./decodings";
-import { JsonRpcSigner, JsonRpcProvider } from "@ethersproject/providers";
+// import { JsonRpcSigner, JsonRpcProvider } from "@ethersproject/providers";
 
 import * as Codec from "@truffle/codec";
 import TextField from "@mui/material/TextField";
@@ -17,6 +17,14 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import Stack from "@mui/material/Stack";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Alert from "@mui/material/Alert";
+
+import SwipeableViews from "react-swipeable-views";
+import { useTheme } from "@mui/material/styles";
+import AppBar from "@mui/material/AppBar";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
@@ -33,7 +41,45 @@ export const injected = new InjectedConnector({
   supportedChainIds: [1, 42],
 });
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
 const App = () => {
+  const theme = useTheme();
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    setTemplate(-1);
+  };
+
+  const handleChangeIndex = (index) => {
+    setValue(index);
+  };
+
   const { chainId, account, activate, deactivate, active, library } =
     useWeb3React();
 
@@ -54,7 +100,7 @@ const App = () => {
     (async () => {
       if (template > -1 && txs[template]?.to) {
         const txParams = txs[template];
-        await decodeTx(txParams);
+        value === 0 ? await decodeTx(txParams) : await decodeTxClient(txParams);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,7 +214,7 @@ const App = () => {
         to: txTargetAddress,
         data: txData,
       };
-      await decodeTxClient(txParams);
+      value === 0 ? await decodeTx(txParams) : await decodeTxClient(txParams);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txTargetAddress, txData, account]);
@@ -242,39 +288,103 @@ const App = () => {
       </section>
       <header className="App-header">
         <h1>Tx Param Component</h1>
-        <Stack spacing={1} direction="row">
-          <ButtonGroup disableElevation variant="contained">
-            {txs.map((decoding, i) => {
-              return (
-                <Button
-                  variant="contained"
-                  size="small"
-                  key={i}
-                  disabled={!active}
-                  onClick={() => {
-                    setTemplate(i);
-                  }}
-                >
-                  {txs[i].desc}
-                </Button>
-              );
-            })}
-          </ButtonGroup>
-
-          <Button
-            variant="contained"
-            size="small"
-            key={5}
-            disabled={!active}
-            onClick={() => {
-              setTemplate(5);
-              setShowDecodingResults(false);
-            }}
-          >
-            Custom Tx
-          </Button>
-        </Stack>
       </header>
+
+      <main>
+        {active ? (
+          <Box sx={{ bgcolor: "background.paper", width: 700 }}>
+            <AppBar position="static">
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                indicatorColor="secondary"
+                textColor="inherit"
+                variant="fullWidth"
+                aria-label="full width tabs example"
+              >
+                <Tab label="Server" />
+                <Tab label="Client" />
+              </Tabs>
+            </AppBar>
+            <SwipeableViews
+              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+              index={value}
+              onChangeIndex={handleChangeIndex}
+            >
+              <TabPanel value={value} index={0} dir={theme.direction}>
+                <Stack spacing={1} direction="row">
+                  <ButtonGroup disableElevation variant="contained">
+                    {txs.map((decoding, i) => {
+                      return (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          key={i}
+                          disabled={!active}
+                          onClick={() => {
+                            setTemplate(i);
+                          }}
+                        >
+                          {txs[i].desc}
+                        </Button>
+                      );
+                    })}
+                  </ButtonGroup>
+
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="secondary"
+                    key={5}
+                    disabled={!active}
+                    onClick={() => {
+                      setTemplate(5);
+                      setShowDecodingResults(false);
+                    }}
+                  >
+                    Custom Tx
+                  </Button>
+                </Stack>
+              </TabPanel>
+              <TabPanel value={value} index={1} dir={theme.direction}>
+                <Stack spacing={1} direction="row">
+                  <ButtonGroup disableElevation variant="contained">
+                    {txs.map((decoding, i) => {
+                      return (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          key={i}
+                          disabled={!active}
+                          onClick={() => {
+                            setTemplate(i);
+                          }}
+                        >
+                          {txs[i].desc}
+                        </Button>
+                      );
+                    })}
+                  </ButtonGroup>
+
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="secondary"
+                    key={5}
+                    disabled={!active}
+                    onClick={() => {
+                      setTemplate(5);
+                      setShowDecodingResults(false);
+                    }}
+                  >
+                    Custom Tx
+                  </Button>
+                </Stack>
+              </TabPanel>
+            </SwipeableViews>
+          </Box>
+        ) : null}
+      </main>
 
       <main>
         {active ? (
@@ -291,7 +401,7 @@ const App = () => {
                 <TextField
                   style={{ width: "100%" }}
                   id="outlined-target-address"
-                  label="Target Address"
+                  label="Contract Address"
                   disabled={loading}
                   onChange={({ target }) => setTxTargetAddress(target.value)}
                 />
@@ -332,120 +442,16 @@ const App = () => {
             </Stack>
           ) : loading ? (
             <CircularProgress />
-          ) : (
+          ) : template > -1 ? (
             <EthTxParams
               decoding={data}
               definitions={definitions}
             ></EthTxParams>
-          )
+          ) : null
         ) : (
           <Alert severity="info">Please connect your wallet to start!</Alert>
         )}
       </main>
-
-      {/* <main>
-        {active && template === 5 ? (
-          <Stack
-            spacing={2}
-            style={{ backgroundColor: "#fff", padding: "2em", width: "30%" }}
-          >
-            <TextField
-              style={{ width: "100%" }}
-              id="outlined-target-address"
-              label="Target Address"
-              onChange={({ target }) => setTxTargetAddress(target.value)}
-              css={css`
-                width: 100%;
-              `}
-            />
-
-            <TextField
-              style={{ width: "100%" }}
-              id="outlined-multiline-flexible"
-              label="Tx Data"
-              multiline
-              maxRows={8}
-              rows={8}
-              onChange={({ target }) => setTxData(target.value)}
-              css={css`
-                width: 100%;
-              `}
-            />
-
-            <LoadingButton
-              disabled={!txTargetAddress || !txData}
-              variant="contained"
-              size="large"
-              onClick={handleTxDecoding}
-            >
-              Decode Tx Data
-            </LoadingButton>
-          </Stack>
-        ) : null}
-        {active ? (
-          loading ? (
-            <CircularProgress />
-          ) : (
-            <EthTxParams
-              decoding={data}
-              definitions={definitions}
-            ></EthTxParams>
-          )
-        ) : (
-          <Alert severity="info">Please connect your wallet to start!</Alert>
-        )}
-      </main> */}
-
-      {/* <main>
-        {template === 5 ? (
-          <div
-            style={{ backgroundColor: "#fff", padding: "2em", width: "30%" }}
-          >
-            <TextField
-              style={{ width: "100%", padding: "1rem 0" }}
-              id="outlined-target-address"
-              label="Target Address"
-              onChange={({ target }) => setTxTargetAddress(target.value)}
-              css={css`
-                width: 100%;
-              `}
-            />
-
-            <TextField
-              style={{ width: "100%", padding: "1rem 0" }}
-              id="outlined-multiline-flexible"
-              label="Tx Data"
-              multiline
-              maxRows={8}
-              rows={8}
-              onChange={({ target }) => setTxData(target.value)}
-              css={css`
-                width: 100%;
-              `}
-            />
-
-            <LoadingButton
-              disabled={!txTargetAddress || !txData}
-              variant="contained"
-              size="large"
-              onClick={handleTxDecoding}
-            >
-              Decode Tx Data
-            </LoadingButton>
-          </div>
-        ) : template >= 0 ? (
-          loading ? (
-            <CircularProgress />
-          ) : (
-            <EthTxParams
-              decoding={data}
-              definitions={definitions}
-            ></EthTxParams>
-          )
-        ) : !active ? (
-          <Alert severity="info">Please connect your wallet to start!</Alert>
-        ) : null}
-      </main> */}
     </div>
   );
 };
