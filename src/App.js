@@ -37,8 +37,9 @@ import {
 } from "./generate-decodings";
 
 // adding support for Kovan and Mainnet
-export const injected = new InjectedConnector({
-  supportedChainIds: [1, 42],
+const supportedChainIds = [1, 42];
+const injected = new InjectedConnector({
+  supportedChainIds,
 });
 
 function TabPanel(props) {
@@ -84,6 +85,7 @@ const App = () => {
     useWeb3React();
 
   // input data
+  const [activateError, setActivateError] = useState("");
   const [txTargetAddress, setTxTargetAddress] = useState("");
   const [txData, setTxData] = useState("");
 
@@ -177,8 +179,12 @@ const App = () => {
 
   const handleWalletConnect = () => {
     try {
+      setActivateError("");
       setConnecting(true);
-      activate(injected, (error) => setConnecting(false));
+      activate(injected, (error) => {
+        setActivateError(error);
+        setConnecting(false);
+      });
       setConnecting(false);
     } catch (error) {
       setConnecting(false);
@@ -187,6 +193,7 @@ const App = () => {
 
   const handleWalletDisconnect = () => {
     try {
+      setActivateError("");
       setConnecting(true);
       deactivate();
       setConnecting(false);
@@ -256,6 +263,11 @@ const App = () => {
 
   return (
     <div className="App">
+      {activateError ? (
+        <Alert variant="filled" severity="error">
+          {activateError?.message}
+        </Alert>
+      ) : null}
       <section className="App-wallet">
         <LoadingButton
           loading={connecting}
@@ -302,12 +314,12 @@ const App = () => {
                 variant="fullWidth"
                 aria-label="full width tabs example"
               >
-                <Tab label="Server" />
-                <Tab label="Client" />
+                <Tab label="Tx Decoding (Server)" />
+                <Tab label="Tx Decoding (Client)" />
               </Tabs>
             </AppBar>
             <SwipeableViews
-              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+              axis={value === 0 ? "x-reverse" : "x"}
               index={value}
               onChangeIndex={handleChangeIndex}
             >
