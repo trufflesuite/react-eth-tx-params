@@ -2,7 +2,8 @@
   text-align: center;
 }
 
-html, body {
+html,
+body {
   background-color: rgb(179, 179, 179);
 }
 
@@ -36,6 +37,16 @@ main {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding-bottom: 0.5rem;
+}
+
+.App-wallet {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  margin: 0;
+  background: #f8f5f0;
 }
 
 .App-link {
