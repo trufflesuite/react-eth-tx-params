@@ -67,7 +67,7 @@ TabPanel.propTypes = {
 
 const App = () => {
   const theme = useTheme();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(1);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -130,12 +130,6 @@ const App = () => {
 
     // NOT WORKING :(
     // const decoder = await forAddress(to, {
-    //   provider: library.provider,
-    //   projectInfo,
-    // });
-
-    // NOT WORKING :(
-    // const decoder = await forAddress(to, {
     //   provider: new JsonRpcProvider("https://mainnet.infura.io/v3/e24b1e96c17e4aa995ad8c0ee861667c"),
     //   projectInfo,
     // });
@@ -150,6 +144,7 @@ const App = () => {
     //   projectInfo,
     // });
 
+    // WORKING :)
     const decoder = await forAddress(to, {
       provider: library.provider,
       projectInfo,
@@ -315,7 +310,7 @@ const App = () => {
                 variant="fullWidth"
                 aria-label="full width tabs example"
               >
-                <Tab label="Tx Decoding (Server)" />
+                <Tab disabled={true} label="Tx Decoding (Server)" />
                 <Tab label="Tx Decoding (Client)" />
               </Tabs>
             </AppBar>

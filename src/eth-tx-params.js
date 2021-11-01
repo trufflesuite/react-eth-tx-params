@@ -105,6 +105,12 @@ function renderItem(item, definitions) {
 
     default:
       switch (item.type.typeClass) {
+        case "int":
+          return (
+            <span className="sol-item solidity-int">
+              {item.value.asBN.toString()}
+            </span>
+          );
         case "uint":
           return (
             <span className="sol-item solidity-uint">
