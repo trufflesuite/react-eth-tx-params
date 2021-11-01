@@ -126,7 +126,7 @@ const App = () => {
     setLoading(true);
 
     // fetching project info from backend service, chainId already injested through MM
-    const projectInfo = await fetchProjectInfo(to, chainId);
+    const { info: projectInfo } = await fetchProjectInfo(to, chainId);
 
     // NOT WORKING :(
     // const decoder = await forAddress(to, {
@@ -166,9 +166,8 @@ const App = () => {
     setDefintions(definitions);
 
     // build decoding
-    const decoding = deserializeCalldataDecoding(
-      await decoder.decodeTransaction(tx)
-    );
+    const decoding = await decoder.decodeTransaction(tx);
+
     setData(decoding);
 
     setLoading(false);
