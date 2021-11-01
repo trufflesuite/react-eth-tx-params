@@ -141,12 +141,17 @@ const App = () => {
     // });
 
     // WORKING :)
+    // const decoder = await forAddress(to, {
+    //   provider: new Web3HttpProvider(
+    //     `https://${mapNetworkToChainid(
+    //       chainId
+    //     )}.infura.io/v3/e24b1e96c17e4aa995ad8c0ee861667c`
+    //   ),
+    //   projectInfo,
+    // });
+
     const decoder = await forAddress(to, {
-      provider: new Web3HttpProvider(
-        `https://${mapNetworkToChainid(
-          chainId
-        )}.infura.io/v3/e24b1e96c17e4aa995ad8c0ee861667c`
-      ),
+      provider: library.provider,
       projectInfo,
     });
 
